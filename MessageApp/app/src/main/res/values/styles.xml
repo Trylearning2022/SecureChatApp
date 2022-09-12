@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Divider">
+        <item name = "android:layout_width">0dp</item>
+        <item name = "android:layout_height">1dp</item>
+        <item name = "android:background">@color/hint_text</item>
+    </style>
+    <style name="AlertDialogStyle" parent="Theme.Material3.Light.Dialog.Alert">
+        <item name="android:background">@color/float_background</item>
+        <item name="android:textColor">#FB0404</item>
+        <item name="android:textColorPrimary">@color/primary_text</item>
+    </style>
+</resources>

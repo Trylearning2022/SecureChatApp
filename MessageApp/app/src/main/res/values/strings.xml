@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">SecureTalk</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login_to_continue">Login to continue</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="sign_in">Sign In</string>
+    <string name="add_image">Add Image</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="select_user">Select User</string>
+    <string name="type_a_message">Type a message</string>
+    <string name="secure_chat_app">Secure Talk</string>
+    <string name="online">Online</string>
+    <string name="verifiy">Verifiy</string>
+    <string name="verify">Verify</string>
+    <string name="resent_email">Resent Email</string>
+    <string name="send_email_verification">Send Email Verification</string>
+    <string name="verify_your_email_address">Verify Your Email Address</string>
+    <string name="to_continue_secure_chat_please_verify_your_email">To continue Secure Chat, please verify your email</string>
+</resources>
