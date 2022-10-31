@@ -81,7 +81,7 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:overScrollMode="never"
-        android:padding="@dimen/_20sdp"
+        android:padding="@dimen/_5sdp"
         app:stackFromEnd="true"
         android:visibility="gone"
         android:background="@drawable/background_chat_activity"
@@ -117,11 +117,23 @@
 
     </FrameLayout>
 
+    <ImageView
+        android:id="@+id/filesSelect"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginBottom="@dimen/_12sdp"
+        android:padding="@dimen/_5sdp"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/inputMessage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
     <EditText
         android:id="@+id/inputMessage"
         android:layout_width="0dp"
         android:layout_height="@dimen/_40sdp"
-        android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginEnd="@dimen/_8sdp"
         android:layout_marginBottom="@dimen/_12sdp"
         android:background="@drawable/background_chat_input"
@@ -134,7 +146,7 @@
         android:importantForAutofill="no"
         app:layout_constraintEnd_toStartOf="@+id/layoutSend"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/filesSelect" />
     <TextView
         android:id="@+id/textAvailability"
         android:layout_width="match_parent"

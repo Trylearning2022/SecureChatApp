@@ -7,7 +7,7 @@
     android:padding="@dimen/_4sdp">
     <TextView
         android:id="@+id/textMessage"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/background_send_message"
         android:paddingStart="@dimen/_12sdp"
@@ -31,4 +31,21 @@
         android:textSize="@dimen/_8ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textMessage"/>
+    <ImageView
+        android:id="@+id/imageSendView"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_150sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+    <TextView
+        android:id="@+id/imageDateTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:textColor="@color/primary_text"
+        android:text="demo2"
+        android:textSize="@dimen/_8ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageSendView"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

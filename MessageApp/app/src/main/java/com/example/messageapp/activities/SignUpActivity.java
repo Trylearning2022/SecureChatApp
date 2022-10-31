@@ -29,7 +29,6 @@ import android.widget.Toast;
 import com.example.messageapp.databinding.ActivitySignUpBinding;
 import com.example.messageapp.securities.MD;
 import com.example.messageapp.utilities.Constants;
-import com.example.messageapp.utilities.PreferenceManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -42,7 +41,6 @@ import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity{
     private ActivitySignUpBinding binding;
-    private PreferenceManager preferenceManager;
     private String encodedImage;
     private final int REQUEST_ID_MULTIPLE_PERMISSION = 101;
     private int optionCode;
@@ -51,7 +49,6 @@ public class SignUpActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        preferenceManager = new PreferenceManager(getApplicationContext());
         setListeners();
     }
     private void setListeners(){
@@ -219,6 +216,7 @@ public class SignUpActivity extends AppCompatActivity{
     //***************************************************//
 
     private Boolean isValidSignUpDetails() {
+        String password = binding.inputPassword.getText().toString().trim();
         if (encodedImage == null) {
             showToast("Select profile image");
             return false;
@@ -229,12 +227,15 @@ public class SignUpActivity extends AppCompatActivity{
             showToast("Enter email");
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
-            showToast("Enter valid image");
+            showToast("Enter valid email");
             return false;
-        } else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
+        } else if (password.isEmpty()) {
             showToast("Enter password");
             return false;
-        } else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
+        } else if(!isStrongPassword(password)) {
+            showToast("Enter strong password");
+            return false;
+        }else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
             showToast("Confirm your password");
             return false;
         } else if (!binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())) {
@@ -243,7 +244,45 @@ public class SignUpActivity extends AppCompatActivity{
         } else {
             return true;
         }
-    }
+}
+    private boolean isStrongPassword(String str){
+        boolean capitalFlag = false;
+        boolean lowerCaseFlag = false;
+        boolean numberFlag = false;
+        boolean specialSymbolFlag = false;
+        int requiredLength = 8;
+        String specialSymbol = "~`!@#$%^&*()_-+={[}]|:;'<,>.?/";
+        char ch;
+        if(str.length() < requiredLength){
+            return false;
+        }
+        for(int i=0;i<str.length();i++) {
+            ch = str.charAt(i);
+            for(int j=0;j<specialSymbol.length();j++){
+                if(ch == specialSymbol.charAt(j)){
+                    specialSymbolFlag = true;
+                    break;
+                }
+            }
+            if(specialSymbolFlag){break; }
+            if(i == str.length() - 1){ return false;}
+        }
+
+        for(int i = 0;i<str.length();i++){
+            ch = str.charAt(i);
+            if(Character.isDigit(ch)){
+                numberFlag = true;
+            }else if(Character.isUpperCase(ch)){
+                capitalFlag = true;
+            }else if(Character.isLowerCase(ch)){
+                lowerCaseFlag = true;
+            }
+            if (capitalFlag && lowerCaseFlag && numberFlag) {
+                return true;
+            }
+        }
+        return false;
+}
     private void loading(Boolean isLoading){
         if (isLoading){
             binding.buttonSignUp.setVisibility(View.INVISIBLE);

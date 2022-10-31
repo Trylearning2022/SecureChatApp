@@ -11,12 +11,12 @@
         android:layout_height="@dimen/_30sdp"
         android:background="@drawable/background_image"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@id/textMessage"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:riv_oval="true" />
     <TextView
         android:id="@+id/textMessage"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_4sdp"
         android:background="@drawable/background_received_message"
@@ -39,5 +39,22 @@
         android:textSize="@dimen/_8ssp"
         app:layout_constraintStart_toStartOf="@+id/textMessage"
         app:layout_constraintTop_toBottomOf="@id/textMessage"/>
+    <ImageView
+        android:id="@+id/imageReceivedView"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_150sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageProfile"
+        />
+    <TextView
+        android:id="@+id/imageDateTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:textColor="@color/primary_text"
+        android:text="demo2"
+        android:textSize="@dimen/_8ssp"
+        app:layout_constraintStart_toStartOf="@+id/imageReceivedView"
+        app:layout_constraintTop_toBottomOf="@+id/imageReceivedView"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,6 +29,18 @@ public class Constants {
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
+    public static final String KEY_DOCUMENTS = "documentFiles";
+    public static final String KEY_IMAGE_FILE = "imageFiles";
+    public static final String KEY_FILE_TYPE = "fileType";
+    public static final String SECRET_KEY = "secretKey";
+    public static final String RSA_PUBLIC_KEY ="rsaPublicKey";
+    public static final String RSA_PRIVATE_KEY = "rsaPrivateKey";
+    public static final String AES_IV = "iv";
+    public static final String AES_CIPHER_KEY = "cipherAESKey";
+    public static final String KEYSTORE = "AndroidKeyStore";
+    public static final String ALIAS = "MY_APP";
+    public static final String SENDER_PUBLIC_KEY = "senderKey";
+    public static final String RECEIVER_PUBLIC_KEY = "receiverKey";
 
     public static HashMap<String, String> remoteMSGHeaders = null;
     public static HashMap<String, String> getRemoteMSGHeaders(){

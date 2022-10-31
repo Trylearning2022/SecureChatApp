@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.example.messageapp.databinding.ActivityMainBinding;
 import com.example.messageapp.listeners.ConversationListener;
 import com.example.messageapp.models.ChatMessage;
 import com.example.messageapp.models.User;
+import com.example.messageapp.securities.AES;
 import com.example.messageapp.utilities.Constants;
 import com.example.messageapp.utilities.PreferenceManager;
 import com.google.firebase.firestore.DocumentChange;
@@ -26,10 +28,27 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends BaseActivity implements ConversationListener {
     private ActivityMainBinding binding;
@@ -37,12 +56,12 @@ public class MainActivity extends BaseActivity implements ConversationListener {
     private List<ChatMessage> conversations;
     private RecentConversationsAdapter conversationsAdapter;
     private FirebaseFirestore database;
+    private AES aes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        preferenceManager = new PreferenceManager(getApplicationContext());
         init();
         loadUserDetails();
         getToken();
@@ -51,10 +70,12 @@ public class MainActivity extends BaseActivity implements ConversationListener {
     }
     //**************************************//
     private void init(){
+        preferenceManager = new PreferenceManager(getApplicationContext());
         conversations = new ArrayList<>();
         conversationsAdapter = new RecentConversationsAdapter(conversations, this);
         binding.conversationsRecyclerView.setAdapter(conversationsAdapter);
         database = FirebaseFirestore.getInstance();
+        aes = new AES();
     }
     //***************************************//
     private void setListeners(){
@@ -80,6 +101,17 @@ public class MainActivity extends BaseActivity implements ConversationListener {
                 .whereEqualTo(Constants.KEY_RECEIVER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
     }
+    private String decryptMessage(String encryptedMessage,String cipherKey,byte[] iVector){
+        String originalMessage = null;
+        SecretKey secretKey = aes.loadSecretKey(cipherKey);
+        try {
+            originalMessage = aes.aesDecrypt(encryptedMessage,secretKey,iVector);
+        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
+            ex.printStackTrace();
+        }
+        Log.d("message","message: "+ originalMessage);
+        return originalMessage;
+    }
     //*******************************************// recent chat
     private final EventListener<QuerySnapshot> eventListener = (value, error) ->{
         if (error != null){
@@ -94,24 +126,61 @@ public class MainActivity extends BaseActivity implements ConversationListener {
                     chatMessage.senderId = senderId;
                     chatMessage.receiverId = receiverId;
 
-                    if(preferenceManager.getString(Constants.KEY_USER_ID).equals(senderId)){
+                    String encryptedMessage = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
+                    String strIV = documentChange.getDocument().getString(Constants.AES_IV);
+                    byte[] iVector = new byte[0];
+                    if (strIV != null) {
+                        iVector = Base64.decode((strIV.getBytes(StandardCharsets.UTF_8)), Base64.DEFAULT);
+                    }
+                    if(preferenceManager.getString(Constants.KEY_USER_ID).equals(senderId)){   //if user is a sender
+                        /* These info will be push to chat activity to identify the person you are chatting to */
                         chatMessage.conversationImage = documentChange.getDocument().getString(Constants.KEY_RECEIVER_IMAGE);
                         chatMessage.conversationName = documentChange.getDocument().getString(Constants.KEY_RECEIVER_NAME);
                         chatMessage.conversationId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                    }else {
+                        chatMessage.publicKey = documentChange.getDocument().getString(Constants.RECEIVER_PUBLIC_KEY);
+                        /*decrypt the message */
+                        String aesKey = preferenceManager.getString(Constants.AES_CIPHER_KEY);
+                        chatMessage.message = decryptMessage(encryptedMessage,aesKey,iVector);
+
+                    }
+                    //if user is a receiver
+                    if(preferenceManager.getString(Constants.KEY_USER_ID).equals(receiverId)){
                         chatMessage.conversationImage = documentChange.getDocument().getString(Constants.KEY_SENDER_IMAGE);
                         chatMessage.conversationName = documentChange.getDocument().getString(Constants.KEY_SENDER_NAME);
                         chatMessage.conversationId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
+                        chatMessage.publicKey = documentChange.getDocument().getString(Constants.SENDER_PUBLIC_KEY);
+
+                        String cipherKey = documentChange.getDocument().getString(Constants.AES_CIPHER_KEY);
+                        chatMessage.message = decryptMessage(encryptedMessage,cipherKey,iVector);
+
                     }
-                    chatMessage.message = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
+                    chatMessage.messageType = documentChange.getDocument().getString(Constants.KEY_FILE_TYPE);
                     chatMessage.dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                     conversations.add(chatMessage);
-                }else if (documentChange.getType() == DocumentChange.Type.MODIFIED){
+                }else if (documentChange.getType() == DocumentChange.Type.MODIFIED){     //facing problem here
                     for ( int i = 0; i < conversations.size(); i ++){
                         String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
-                        String receiverid = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
-                        if(conversations.get(i).senderId.equals(senderId) && conversations.get(i).receiverId.equals(receiverid)){
-                            conversations.get(i).message = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
+                        String receiverId = documentChange.getDocument().getString(Constants.KEY_RECEIVER_ID);
+                        String cipherKey;
+                        String decryptedMessage;
+                        if(conversations.get(i).senderId.equals(senderId) && conversations.get(i).receiverId.equals(receiverId)){
+                            /* user is sender */
+                            String encryptedMessage = documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE);
+                            String strIV = documentChange.getDocument().getString(Constants.AES_IV);
+                            byte[] iVector = new byte[0];
+                            if (strIV != null) {
+                                iVector = Base64.decode((strIV.getBytes(StandardCharsets.UTF_8)), Base64.DEFAULT);
+                            }
+                            cipherKey = documentChange.getDocument().getString(Constants.AES_CIPHER_KEY);
+                            decryptedMessage = decryptMessage(encryptedMessage,cipherKey,iVector);
+                            if(decryptedMessage == null){
+                                cipherKey =  preferenceManager.getString(Constants.AES_CIPHER_KEY);
+                                decryptedMessage = decryptMessage(encryptedMessage,cipherKey,iVector);
+                                conversations.get(i).message = decryptedMessage;
+                            }else{
+                                conversations.get(i).message = decryptedMessage;
+                            }
+                            conversations.get(i).messageType = documentChange.getDocument().getString(Constants.KEY_FILE_TYPE);
                             conversations.get(i).dateObject = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                             break;
                         }
@@ -172,7 +241,7 @@ public class MainActivity extends BaseActivity implements ConversationListener {
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                //do nothing
             }
         });
         alertDialog.show();
@@ -182,6 +251,7 @@ public class MainActivity extends BaseActivity implements ConversationListener {
     public void onConversationClicked(User user) {
         Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
         intent.putExtra(Constants.KEY_USER,user);
+        Log.d("AAA", "Key: " + user.publicKey);
         startActivity(intent);
     }
 }

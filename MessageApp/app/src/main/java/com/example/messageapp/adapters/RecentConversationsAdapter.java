@@ -15,12 +15,14 @@ import com.example.messageapp.models.ChatMessage;
 import com.example.messageapp.models.User;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConversationsAdapter.ConversationViewHolder>{
 
     private final List<ChatMessage> chatMessages;
     private final ConversationListener conversationListener;
 
+    public static final String TEXT_TYPE = "text";
     //constructor
     public RecentConversationsAdapter(List<ChatMessage> chatMessages, ConversationListener conversationListener) {
         this.chatMessages = chatMessages;
@@ -58,12 +60,18 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
         void setData(ChatMessage chatMessage){
             binding.imageProfile.setImageBitmap(getConversationImage(chatMessage.conversationImage));
             binding.textName.setText(chatMessage.conversationName);
-            binding.textRecentMessage.setText(chatMessage.message);
+            if(Objects.equals(chatMessage.messageType,TEXT_TYPE)) {
+                binding.textRecentMessage.setText(chatMessage.message);
+            }else{
+                binding.textRecentMessage.setText(chatMessage.messageType);
+            }
+            //using interface
             binding.getRoot().setOnClickListener(v ->{
                 User user = new User();
                 user.id = chatMessage.conversationId;
                 user.name = chatMessage.conversationName;
                 user.image = chatMessage.conversationImage;
+                user.publicKey = chatMessage.publicKey;   //send publicKey from mainActivity to ChatActivity
                 conversationListener.onConversationClicked(user);
             });
         }

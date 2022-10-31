@@ -28,7 +28,7 @@
         <entry key="..\:/Android/MessageApp/app/src/main/res/drawable/ic_send.xml" value="0.123" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/drawable/ic_username.xml" value="0.123" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/activity_authentication.xml" value="0.20416666666666666" />
-        <entry key="..\:/Android/MessageApp/app/src/main/res/layout/activity_chat.xml" value="0.25" />
+        <entry key="..\:/Android/MessageApp/app/src/main/res/layout/activity_chat.xml" value="0.20416666666666666" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/activity_sign_in.xml" value="0.20416666666666666" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/activity_sign_up.xml" value="0.25" />
@@ -39,6 +39,7 @@
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/item_container_received_message.xml" value="0.22" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/item_container_recent_conversation.xml" value="0.2" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/item_container_send_message.xml" value="0.25" />
+        <entry key="..\:/Android/MessageApp/app/src/main/res/layout/item_container_sent_image.xml" value="0.20416666666666666" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/layout/item_container_user.xml" value="0.25" />
         <entry key="..\:/Android/MessageApp/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.126" />
       </map>
