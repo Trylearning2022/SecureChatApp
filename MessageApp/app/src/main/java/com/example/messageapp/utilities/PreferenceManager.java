@@ -22,7 +22,12 @@ public class PreferenceManager {
         editor.putString(key,value);
         editor.apply();
     }
-    public void clear(){
+    public void remove(String key){    //remove specific values in SharedPreference
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+    public void clear(){        //Delete all the values in SP  // Not in use
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();

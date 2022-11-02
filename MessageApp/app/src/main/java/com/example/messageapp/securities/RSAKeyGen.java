@@ -47,7 +47,6 @@ public class RSAKeyGen {
         final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, Constants.KEYSTORE);
         keyGen.initialize(spec);
         final KeyPair pair = keyGen.generateKeyPair();
-        //rsaPublicKey = byteToBase64Conversion(pair.getPublic().getEncoded());
         Log.d("AAA","Private Key is:" + Base64.encodeToString(pair.getPublic().getEncoded(), Base64.DEFAULT));
     }
 

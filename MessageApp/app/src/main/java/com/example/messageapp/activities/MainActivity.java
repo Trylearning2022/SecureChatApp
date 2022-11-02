@@ -30,6 +30,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.CodeSigner;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
@@ -215,6 +216,13 @@ public class MainActivity extends BaseActivity implements ConversationListener {
         //showToast("Signing out...");
 
     }
+    private void clearMemory(){     //Delete these info but not the cipher Key
+        preferenceManager.remove(Constants.KEY_USER_ID);
+        preferenceManager.remove(Constants.KEY_FCM_TOKEN);
+        preferenceManager.remove(Constants.KEY_IS_SIGNED_IN);
+        preferenceManager.remove(Constants.KEY_NAME);
+        preferenceManager.remove(Constants.KEY_IMAGE);
+    }
     private void confirmSignOut(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, R.style.AlertDialogStyle);
         alertDialog.setTitle("Warning!");
@@ -231,7 +239,8 @@ public class MainActivity extends BaseActivity implements ConversationListener {
                 updates.put(Constants.KEY_FCM_TOKEN, FieldValue.delete());
                 documentReference.update(updates)
                         .addOnSuccessListener(unused -> {
-                            preferenceManager.clear();
+                            clearMemory();
+                            //preferenceManager.clear();
                             startActivity(new Intent(getApplicationContext(), SignUpActivity.class));
                             finish();
                         })

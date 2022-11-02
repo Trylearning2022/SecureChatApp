@@ -131,7 +131,7 @@ public class Verification extends AppCompatActivity {
         SecretKey key = keyGen.generateKey();
         aes = new AES();
         try {
-            preferenceManager.putString(Constants.AES_CIPHER_KEY, aes.rsaEncrypt(key,rsaPublicKey));
+            preferenceManager.putString(Constants.AES_CIPHER_KEY, aes.rsaEncrypt(key,rsaPublicKey));   //Not to be deleted
         } catch (BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -174,7 +174,6 @@ public class Verification extends AppCompatActivity {
             public void onSuccess(Void unused) {
                 if (firebaseAuth.getCurrentUser() != null) {
                     isEmailVerified = firebaseAuth.getCurrentUser().isEmailVerified();
-                    //Log.d("aaaaaaaaaaaaaaaa","onSuccess" + isEmailVerified);
                     if (isEmailVerified) {
                         //email verified, save info and go to sign in page
                         stop = true;
